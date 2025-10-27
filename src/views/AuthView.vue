@@ -1,12 +1,12 @@
 <script setup>
-import NavOptions from "@/components/NavOptions.vue";
+import NavSignIn from "@/components/NavSignIn.vue";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 </script>
 
 <template>
-  <NavOptions />
+  <NavSignIn />
   <main>
     <div id="circle">
       <img id="locker" src="../assets/images/locker.svg" alt="locker svg" />
