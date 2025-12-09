@@ -3,7 +3,6 @@ import { ref, computed } from "vue";
 export function useFilters() {
   const currentTable = ref("courses");
 
-  // estados reativos que serão usados pela UI
   const searchTerm = ref("");
   const selectedSort = ref("");
   const selectedFilter = ref("");
@@ -21,9 +20,10 @@ export function useFilters() {
       filterOptions: [
         { id: 1, text: "Noturno", value: "Noturno" },
         { id: 2, text: "Vespertino", value: "Vespertino" },
-        { id: 3, text: "Integral", value: "Integral" },
-        { id: 4, text: "Bacharelado", value: "Bacharelado" },
-        { id: 5, text: "Licenciatura", value: "Licenciatura" },
+        { id: 3, text: "Vespertino Noturno", value: "Vespertino Noturno" },
+        { id: 4, text: "Integral", value: "Integral" },
+        { id: 5, text: "Bacharelado", value: "Bacharelado" },
+        { id: 6, text: "Licenciatura", value: "Licenciatura" },
       ],
     }
   };

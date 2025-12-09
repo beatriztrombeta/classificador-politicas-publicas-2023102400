@@ -89,7 +89,7 @@ const filteredCourses = computed(() => {
                                     <tr>
                                         <th class="start-column">{{ t("home.courseSubtable.name") }}</th>
                                         <th>
-                                            <Tooltip :text="t('home.courseSubtable.P')">P</Tooltip>
+                                            <Tooltip :text="t('home.courseSubtable.CO')">CO</Tooltip>
                                         </th>
                                         <th>
                                             <Tooltip :text="t('home.courseSubtable.R')">R</Tooltip>
@@ -113,6 +113,9 @@ const filteredCourses = computed(() => {
                                             <Tooltip :text="t('home.courseSubtable.AM')">AM</Tooltip>
                                         </th>
                                         <th>
+                                            <Tooltip :text="t('home.courseSubtable.AN')">AN</Tooltip>
+                                        </th>
+                                        <th>
                                             <Tooltip :text="t('home.courseSubtable.IM')">IM</Tooltip>
                                         </th>
                                         <th>
@@ -130,21 +133,18 @@ const filteredCourses = computed(() => {
                                         <th>
                                             <Tooltip :text="t('home.courseSubtable.QD')">QD</Tooltip>
                                         </th>
-                                        <th>
-                                            <Tooltip :text="t('home.courseSubtable.AN')">AN</Tooltip>
-                                        </th>
                                         <th class="dropout-rate">
                                             <Tooltip :text="t('home.courseSubtable.RE')">RE</Tooltip>
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <template v-for="student in course.students" :key="student.name">
+                                    <template v-for="student in course.students ?? []" :key="student.name">
                                         <tr>
                                             <td class="sub-table start-column">
                                                 <p class="middle truncate">{{ student.name }}</p>
                                             </td>
-                                            <td class="sub-table">{{ student.P }}</td>
+                                            <td class="sub-table">{{ student.CO }}</td>
                                             <td class="sub-table">{{ student.R }}</td>
                                             <td class="sub-table">{{ student.G }}</td>
                                             <td class="sub-table">{{ student.EM }}</td>
@@ -152,13 +152,13 @@ const filteredCourses = computed(() => {
                                             <td class="sub-table">{{ student.TI }}</td>
                                             <td class="sub-table">{{ student.S }}</td>
                                             <td class="sub-table right">{{ student.AM }}</td>
+                                            <td class="sub-table right">{{ student.AN }}</td>
                                             <td class="sub-table right">{{ student.IM }}</td>
                                             <td class="sub-table right">{{ student.NAVG }}</td>
                                             <td class="sub-table right">{{ student.FAVG }}</td>
                                             <td class="sub-table right">{{ student.PR }}</td>
                                             <td class="sub-table right">{{ student.PE }}</td>
                                             <td class="sub-table right">{{ student.QD }}</td>
-                                            <td class="sub-table right">{{ student.AN }}</td>
                                             <td class="sub-table dropout-rate" :class="getRateColor(student.RE)">
                                                 <p class="middle">{{ student.RE }}</p>
                                             </td>
@@ -166,7 +166,7 @@ const filteredCourses = computed(() => {
 
                                         <tr class="percent-row" v-if="student.impact">
                                             <td class="full-line"></td>
-                                            <td class="sub-table full-line">{{ student.impact.P }}</td>
+                                            <td class="sub-table full-line">{{ student.impact.CO }}</td>
                                             <td class="sub-table full-line">{{ student.impact.R }}</td>
                                             <td class="sub-table full-line">{{ student.impact.G }}</td>
                                             <td class="sub-table full-line">{{ student.impact.EM }}</td>
@@ -174,19 +174,18 @@ const filteredCourses = computed(() => {
                                             <td class="sub-table full-line">{{ student.impact.TI }}</td>
                                             <td class="sub-table full-line">{{ student.impact.S }}</td>
                                             <td class="sub-table full-line">{{ student.impact.AM }}</td>
+                                            <td class="sub-table full-line">{{ student.impact.AN }}</td>
                                             <td class="sub-table full-line">{{ student.impact.IM }}</td>
                                             <td class="sub-table full-line">{{ student.impact.NAVG }}</td>
                                             <td class="sub-table full-line">{{ student.impact.FAVG }}</td>
                                             <td class="sub-table full-line">{{ student.impact.PR }}</td>
                                             <td class="sub-table full-line">{{ student.impact.PE }}</td>
                                             <td class="sub-table full-line">{{ student.impact.QD }}</td>
-                                            <td class="sub-table full-line">{{ student.impact.AN }}</td>
                                             <td class="dropout-rate" :class="getRateColor(student.RE)"></td>
                                         </tr>
                                     </template>
-
-                                    <tr v-if="!course.students.length">
-                                        <td colspan="9">{{ t("home.table.noStudents") }}</td>
+                                    <tr v-if="!(course.students?.length)">
+                                        <td colspan="9">{{ t("home.courseTable.noStudents") }}</td>
                                     </tr>
                                 </tbody>
                             </table>
