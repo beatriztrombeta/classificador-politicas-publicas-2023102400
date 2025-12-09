@@ -36,10 +36,6 @@ tr {
   padding: 0.9rem 0;
 }
 
-#sub-table {
-  table-layout: fixed;
-}
-
 #sub-table th:nth-child(1) {
   width: 13%;
 }
@@ -55,7 +51,7 @@ tr {
 }
 
 .truncate {
-  max-width: 11rem;
+  max-width: 9rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

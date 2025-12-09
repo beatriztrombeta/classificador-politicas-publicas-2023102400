@@ -69,6 +69,7 @@ hr {
   width: inherit;
   margin: 0.8rem 2rem;
   opacity: 50%;
+  border-color: var(--normal-blue);
 }
 
 section {
