@@ -2,6 +2,7 @@ const english = {
   messages: {
     home: {
       title: {
+        home: "Home",
         courses: "Courses",
         subjects: "Subjects",
         students: "Students",

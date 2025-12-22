@@ -2,6 +2,7 @@ const spanish = {
   messages: {
     home: {
       title: {
+        home: "Inicio",
         courses: "Cursos",
         subjects: "Materias",
         students: "Estudiantes",
