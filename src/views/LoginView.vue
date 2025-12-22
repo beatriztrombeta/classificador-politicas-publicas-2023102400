@@ -2,7 +2,7 @@
 import { ref, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "@/composable/useTheme";
-import NavOptions from "@/components/NavOptions.vue";
+import NavSignIn from "@/components/NavSignIn.vue";
 
 const { t } = useI18n();
 const { isDark } = useTheme();
@@ -21,7 +21,7 @@ watch(isDark, updateImages);
 
 
 <template>
-  <NavOptions/>
+  <NavSignIn/>
   <main>
     <img :src="UnespLogo" alt="UNESP logo" />
     <section>
