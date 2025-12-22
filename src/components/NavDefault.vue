@@ -13,7 +13,7 @@ const UnespLogo = ref("");
 const showSettings = ref(false);
 const showMenu = ref(false);
 
-const currentTable = ref("courses");
+const currentTable = ref("home");
 
 function updateImages() {
     UnespLogo.value = isDark.value
@@ -44,18 +44,11 @@ watch(isDark, updateImages);
             <img :src="UnespLogo" alt="UNESP logo" />
 
             <div id="tabela-nav">
-                <button :class="{ active: currentTable === 'courses' }" @click="changeTable('courses')">
-                    {{ t("home.title.courses") }}
-                </button>
-                <button :class="{ active: currentTable === 'subjects' }" @click="changeTable('subjects')">
-                    {{ t("home.title.subjects") }}
-                </button>
-                <button :class="{ active: currentTable === 'students' }" @click="changeTable('students')">
-                    {{ t("home.title.students") }}
+                <button :class="{ active: currentTable === 'home' }" @click="changeTable('home')">
+                    {{ t("home.title.home") }}
                 </button>
             </div>
         </nav>
-
         <div>
             <button class="invisible-button" @click="toggleMenu">
                 <svg id="profile" width="39" height="39" viewBox="0 0 39 39" fill="none"
