@@ -8,9 +8,7 @@ const { t } = useI18n();
 <template>
   <NavSignIn />
   <main>
-    <div id="circle">
-      <img id="locker" src="../assets/images/locker.svg" alt="locker svg" />
-    </div>
+    <img id="locker" src="../assets/images/auth-image.png" alt="" />
     <section>
       <p>{{ t("auth.instruction") }}</p>
       <form action="">
@@ -18,8 +16,9 @@ const { t } = useI18n();
           <label class="label-form" for="">{{ t("auth.codeLabel") }}</label>
           <input class="input-form" type="text" />
         </div>
-        <div>
+        <div id="button-wrapper">
           <button class="blue-button">{{ t("auth.continue") }}</button>
+          <a href="#">Reenviar código</a>
         </div>
       </form>
     </section>
@@ -36,13 +35,8 @@ main {
   gap: 1rem;
 }
 
-#circle {
-  border-radius: 100%;
-  border: 0.3rem solid var(--color-primary);
-}
-
-#locker {
-  width: 8rem;
+img {
+  width: 14rem;
 }
 
 section {
@@ -53,9 +47,10 @@ section {
 }
 
 section p {
-  width: 70%;
+  width: 100%;
   text-align: center;
   align-self: center;
+  margin: 0;
 }
 
 form {
@@ -72,7 +67,16 @@ form div {
   width: 100%;
 }
 
+#button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 a {
   font-size: 14px;
+  text-decoration: underline;
+  font-weight: normal;
+  align-self: center;
 }
 </style>
