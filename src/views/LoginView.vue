@@ -21,7 +21,7 @@ watch(isDark, updateImages);
 
 
 <template>
-  <NavSignIn/>
+  <NavSignIn />
   <main>
     <img :src="UnespLogo" alt="UNESP logo" />
     <section>
@@ -30,8 +30,11 @@ watch(isDark, updateImages);
           <label class="label-form" for="">{{ t("login.emailLabel") }}</label>
           <input class="input-form" type="email" />
         </div>
-        <div>
+        <div id="button-wrapper">
           <button class="blue-button">{{ t("login.continue") }}</button>
+          <router-link to="/signup" class="signup-link">
+            Não possuí uma conta? Cadastre-se aqui
+          </router-link>
         </div>
       </form>
     </section>
@@ -45,7 +48,8 @@ main {
   justify-content: center;
   align-items: center;
   gap: 3rem;
-  height: 100%;
+  height: 100vw;
+  padding-bottom: 3rem;
 }
 
 img {
@@ -73,7 +77,17 @@ form div {
   width: 100%;
 }
 
-a {
+#button-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.signup-link {
   font-size: 14px;
+  text-decoration: underline;
+  font-weight: normal;
+  align-self: center;
+  cursor: pointer;
 }
 </style>
