@@ -52,6 +52,10 @@ const english = {
       emailLabel: "Email",
       continue: "Continue",
     },
+    signup: {
+      emailLabel: "Email",
+      continue: "Continue",
+    },
     settings: {
       general: "General",
       theme: "Theme",

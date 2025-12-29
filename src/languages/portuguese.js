@@ -51,6 +51,10 @@ const portuguese = {
       emailLabel: "E-mail Institucional",
       continue: "Continuar",
     },
+    signup: {
+      emailLabel: "E-mail Institucional",
+      continue: "Continuar",
+    },
     settings: {
       settings: "Configurações",
       questions: "IA Políticas Públicas",
