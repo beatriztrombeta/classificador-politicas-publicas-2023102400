@@ -177,6 +177,9 @@ select,
 button {
   font-family: var(--font-sans-serif);
   color: var(--theme-text);
+  -webkit-font-feature-settings: "lnum";
+  -moz-font-feature-settings: "lnum";
+  font-feature-settings: "lnum";
 }
 
 input:focus {
