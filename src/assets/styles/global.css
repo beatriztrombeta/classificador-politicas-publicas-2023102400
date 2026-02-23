@@ -31,6 +31,15 @@ html.light {
   --orange-rate: #FFB367;
   --red-rate: #FF6666;
 
+  --green-rate-pastel: #F1FFEA;
+  --yellow-rate-pastel: #FFFBD9;
+  --orange-rate-pastel: #FFEAD5;
+  --red-rate-pastel: #FFE8E8;
+
+  --green-rate-darker: #418d18;
+  --yellow-rate-darker: #AA9700;
+  --red-rate-darker: #a81f1f;
+
   --th-fst-rate-bg: var(--blue-lighter);
   --th-snd-rate-bg: var(--blue-light);
 
@@ -59,14 +68,19 @@ html.dark {
   --normal-blue: #0a3b52;
   --darker-blue: #081b26;
 
-  --green-rate: #418d18;
+  --green-rate: #336e13;
   --yellow-rate: #AA9700;
   --orange-rate: #c96500;
   --red-rate: #a81f1f;
 
+  --green-rate-pastel: #273b1b;
+  --yellow-rate-pastel: #3b361b;
+  --orange-rate-pastel: #46290f;
+  --red-rate-pastel: #361111;
+
   --th-fst-rate-bg: var(--normal-blue);
   --th-snd-rate-bg: var(--color-secondary);
-  
+
   --color-line-bd: #ffffff4d;
   --color-filter-bd: var(--normal-blue);
   --color-filter-bg: var(--normal-blue);
@@ -144,7 +158,7 @@ a {
   font-weight: 600;
 }
 
-a > img {
+a>img {
   font-weight: normal;
 }
 
@@ -177,35 +191,13 @@ select,
 button {
   font-family: var(--font-sans-serif);
   color: var(--theme-text);
+  -webkit-font-feature-settings: "lnum";
+  -moz-font-feature-settings: "lnum";
+  font-feature-settings: "lnum";
 }
 
 input:focus {
   outline: none;
-}
-
-.sort-filter-export {
-  display: flex;
-  flex-direction: row;
-  padding: 0.5rem;
-  gap: 0.5rem;
-  border: 2px solid var(--color-filter-bd);
-  border-radius: var(--radius-md);
-  background: var(--color-filter-bg);
-  align-items: center;
-}
-
-.select-sort-filter {
-  border: none;
-  background: none;
-  display: flex;
-  flex-direction: row;
-  padding-right: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.sort-filter-icons > path {
-  stroke: var(--color-primary);
 }
 
 select:focus {

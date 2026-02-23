@@ -3,10 +3,12 @@ const spanish = {
     home: {
       title: {
         home: "Inicio",
+        users: "Usuarios",
+        departments: "Departamentos",
         courses: "Cursos",
         subjects: "Materias",
         students: "Estudiantes",
-        default: "Tabla",
+        student: "Estudiante"
       },
       courseTable: {
         courseName: "Nombre del Curso",
@@ -49,6 +51,10 @@ const spanish = {
       continue: "Continuar",
     },
     login: {
+      emailLabel: "Correo electrónico",
+      continue: "Continuar",
+    },
+    signup: {
       emailLabel: "Correo electrónico",
       continue: "Continuar",
     },

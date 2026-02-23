@@ -1,23 +1,25 @@
 <script setup>
-import NavSignIn from "@/components/NavSignIn.vue";
 import { useI18n } from "vue-i18n";
+import { inject } from 'vue';
 
 const { t } = useI18n();
+const { signup, next } = inject('signup');
 </script>
 
 <template>
-  <NavSignIn />
   <main>
-    <img id="locker" src="../assets/images/auth-image.png" alt="" />
+    <img id="locker" src="@/assets/images/auth-image.png" alt="" />
     <section>
       <p>{{ t("auth.instruction") }}</p>
-      <form action="">
+      <form @submit.prevent="next">
         <div>
           <label class="label-form" for="">{{ t("auth.codeLabel") }}</label>
           <input class="input-form" type="text" />
         </div>
         <div id="button-wrapper">
-          <button class="blue-button">{{ t("auth.continue") }}</button>
+          <button class="blue-button" :disabled="!signup.email" @click="next">
+            {{ t("signup.continue") }}
+          </button>
           <a href="#">Reenviar código</a>
         </div>
       </form>
@@ -27,7 +29,8 @@ const { t } = useI18n();
 
 <style scoped>
 main {
-  height: 100%;
+  height: 100vw;
+  padding-bottom: 3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,7 +39,8 @@ main {
 }
 
 img {
-  width: 14rem;
+  width: 16rem;
+  height: auto;
 }
 
 section {

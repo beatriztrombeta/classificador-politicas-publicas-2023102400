@@ -1,39 +1,32 @@
 <script setup>
-import { ref, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "@/composable/useTheme";
-import NavSignIn from "@/components/NavSignIn.vue";
+import { inject } from 'vue';
 
 const { t } = useI18n();
-const { isDark } = useTheme();
+useTheme();
 
-const UnespLogo = ref("");
-
-function updateImages() {
-  UnespLogo.value = isDark.value
-    ? new URL("../assets/images/UNESP-dark.png", import.meta.url).href
-    : new URL("../assets/images/UNESP-light.png", import.meta.url).href;
-}
-
-onMounted(updateImages);
-watch(isDark, updateImages);
+const { signup, next } = inject('signup');
 </script>
 
-
 <template>
-  <NavSignIn />
   <main>
-    <img :src="UnespLogo" alt="UNESP logo" />
+    <h1>Cadastre-se aqui!</h1>
+    <img src="@/assets/images/signup-1.png" alt="" />
     <section>
-      <form action="">
+      <form @submit.prevent="next">
         <div>
-          <label class="label-form" for="">{{ t("login.emailLabel") }}</label>
-          <input class="input-form" type="email" />
+          <label class="label-form">
+            {{ t("signup.emailLabel") }}
+          </label>
+          <input class="input-form" type="email" v-model="signup.email" required />
         </div>
         <div id="button-wrapper">
-          <button class="blue-button">{{ t("login.continue") }}</button>
-          <router-link to="/signup" class="signup-link">
-            Não possuí uma conta? Cadastre-se aqui
+          <button class="blue-button" :disabled="!signup.email">
+            {{ t("signup.continue") }}
+          </button>
+          <router-link to="/login" class="signup-link">
+            Já possuí uma conta? Faça login
           </router-link>
         </div>
       </form>
@@ -41,19 +34,21 @@ watch(isDark, updateImages);
   </main>
 </template>
 
+
 <style scoped>
 main {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 3rem;
+  gap: 2rem;
   height: 100vw;
   padding-bottom: 3rem;
 }
 
 img {
-  width: 14rem;
+  width: 16rem;
+  height: auto;
 }
 
 section {

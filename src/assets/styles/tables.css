@@ -1,0 +1,144 @@
+html.dark .ag-theme-alpine {
+    --ag-background-color: var(--theme-bg);
+    --ag-foreground-color: var(--theme-text);
+
+    --ag-header-background-color: #040d13;
+    --ag-header-foreground-color: var(--theme-text);
+
+    --ag-border-color: #1e293b;
+    --ag-secondary-border-color: #1e293b;
+
+    --ag-row-hover-color: #07161f;
+    --ag-selected-row-background-color: #1e293b;
+
+    --ag-odd-row-background-color: #07161f;
+
+    --ag-input-background-color: #020617;
+    --ag-input-border-color: #1e293b;
+    --ag-input-focus-border-color: #3b82f6;
+
+    --ag-control-panel-background-color: #020617;
+    --ag-side-panel-background-color: #020617;
+
+    --ag-tooltip-background-color: #020617;
+    --ag-tooltip-foreground-color: #e5e7eb;
+
+    --ag-menu-background-color: #020617;
+    --ag-menu-text-color: #e5e7eb;
+
+    --ag-checkbox-background-color: #020617;
+    --ag-checkbox-border-color: #1e293b;
+}
+
+html.light .ag-theme-alpine {
+    --ag-background-color: var(--white);
+    --ag-foreground-color: var(--sepia);
+
+    --ag-header-background-color: none;
+    --ag-header-foreground-color: #5E6163;
+}
+
+.ag-theme-alpine .ag-header-cell-text {
+    text-transform: uppercase;
+}
+
+.grid {
+    width: 100%;
+}
+
+.status-tag {
+    padding: 0.5rem 1rem;
+    border-radius: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-tag.pending {
+    background: var(--yellow-rate-pastel);
+    color: var(--yellow-rate-darker);
+}
+
+.status-tag.active {
+    background: var(--green-rate-pastel);
+    color: var(--green-rate-darker);
+}
+
+.status-tag.rejected {
+    background: var(--red-rate-pastel);
+    color: var(--red-rate-darker);
+}
+
+.documents-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--ag-border-color);
+  background: transparent;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--theme-text);
+}
+
+.documents-btn:hover {
+  background: var(--ag-row-hover-color);
+}
+
+.role-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ag-foreground-color);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.role-tag.adm {
+  color: var(--color-secondary);
+}
+
+.role-tag.dep {
+  color: rgb(99, 123, 255);
+}
+
+.role-tag.prof {
+  color: #6f42c1;
+}
+
+.role-tag.student {
+  color: #198775;
+}
+
+.role-tag.default {
+  color: var(--ag-foreground-color);
+}
+
+.parent-row {
+  background-color: var(--white);
+}
+
+.child-row {
+  background-color: #fafafa;
+}
+
+.cell-hidden {
+  color: transparent;
+}
+
+.ag-details-row {
+  padding: 0 !important;
+}
+
+.ag-details-row .ag-root-wrapper {
+  border: none;
+}
+
+
+
