@@ -3,10 +3,12 @@ const spanish = {
     home: {
       title: {
         home: "Inicio",
+        users: "Usuarios",
+        departments: "Departamentos",
         courses: "Cursos",
         subjects: "Materias",
         students: "Estudiantes",
-        default: "Tabla",
+        student: "Estudiante"
       },
       courseTable: {
         courseName: "Nombre del Curso",

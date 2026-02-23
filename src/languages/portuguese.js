@@ -3,57 +3,26 @@ const portuguese = {
     home: {
       title: {
         home: "Início",
+        users: "Usuários",
+        departments: "Departamentos",
         courses: "Cursos",
         subjects: "Matérias",
         students: "Discentes",
-      },
-      courseTable: {
-        courseName: "Nome do Curso",
-        universityUnit: "Unidade Universitária",
-        campus: "Câmpus",
-        type: "Tipo",
-        studyPeriod: "Período de Estudos",
-        dropoutRate: "Evasão (%)",
-        noStudents: "Nenhum discente cadastrado.",
-      },
-      courseSubtable: {
-        name: "Nome",
-        P: "Período da Graduação",
-        R: "Raça",
-        G: "Gênero",
-        EM: "Ensino Médio",
-        C: "Cotas",
-        TI: "Tipo de Ingresso",
-        S: "Situação",
-        AM: "Ano da Matrícula",
-        IM: "Idade Quando se Matriculou",
-        NAVG: "Nota Média",
-        FAVG: "Frequência Média",
-        PR: "Percentual de Reprovação",
-        PE: "Percentual de Exames",
-        QD: "Quantidade de Disciplinas",
-        AN: "Ano de Nascimento",
-        RE: "Risco de Evasão",
-      },
-      buttons: {
-        exportPDF: "Exportar PDF",
-        filter: "Filtrar",
-        sort: "Ordenar",
-        search: "Pesquisar",
-      },
+        student: "Aluno"
+      }
     },
     auth: {
       instruction: "Insira o código enviado para seu email institucional.",
       codeLabel: "Código de Verificação",
-      continue: "Continuar",
+      continue: "Continuar"
     },
     login: {
       emailLabel: "E-mail Institucional",
-      continue: "Continuar",
+      continue: "Continuar"
     },
     signup: {
       emailLabel: "E-mail Institucional",
-      continue: "Continuar",
+      continue: "Continuar"
     },
     settings: {
       settings: "Configurações",
@@ -66,7 +35,61 @@ const portuguese = {
       auto: "Sistema",
       logout: "Sair"
     },
-  },
-};
+    tables: {
+      general: {
+        name: "Nome",
+        campus: "Câmpus",
+        unity: "Unidade",
+        course: "Curso",
+        evasion: "Evasão (%)"
+      },
+      simple: {
+        role: "Perfil",
+        signupDate: "Data de Cadastro",
+        lastUpdate: "Última Atualização",
+        documents: "Documentos",
+        status: "Status"
+      },
+      courses: {
+        type: 'Tipo',
+        period: 'Período'
+      },
+      subjects: {
+        students: {
+          concept: 'Conceito',
+          frequency: 'Frequência',
+          realizationType: 'Tipo de Efetivação',
+          noteType: 'Tipo de Nota',
+          note: 'Nota'
+        }
+      },
+      students: {
+        city: 'Cidade de Origem',
+        color: 'Raça/Cor',
+        genre: 'Sexo',
+        highSchool: 'Ensino Médio',
+        quotas: 'Cotas',
+        enrollmentType: 'Tipo de Ingresso',
+        status: 'Situação',
+        avgNote: 'Nota Média',
+        maxNote: 'Nota Máxima',
+        minNote: 'Nota Mínima',
+        medNote: 'Nota Mediana',
+        avgFreq: 'Frequência Média (%)',
+        maxFreq: 'Frequência Máxima (%)',
+        minFreq: 'Frequência Mínima (%)',
+        medFreq: 'Frequência Mediana (%)',
+        failRate: 'Percentual de Reprovação (%)',
+        percTests: 'Percentual de Exames (%)',
+        numSubjects: 'Quantidade de Disciplinas',
+        birthYear: 'Ano de Nascimento',
+        birthMonth: 'Mês de Nascimento',
+        ageAtEnrollment: 'Idade na Matrícula',
+        campusDistance: 'Distância do Câmpus',
+        dropout: 'Risco de Evasão (%)',
+      }
+    }
+  }
+}
 
-export default portuguese;
+export default portuguese
