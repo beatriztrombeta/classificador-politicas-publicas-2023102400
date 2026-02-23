@@ -6,10 +6,10 @@ import { mocks } from '@/mocks'
 const rowData = ref([])
 
 onMounted(() => {
-  rowData.value = mocks.departments()
+  rowData.value = mocks.units()
 })
 </script>
 
 <template>
-  <BaseTable entity="departments" :rowData="rowData" />
+  <BaseTable entity="units" :rowData="rowData" />
 </template>

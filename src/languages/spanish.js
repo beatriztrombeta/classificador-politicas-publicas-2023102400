@@ -5,6 +5,7 @@ const spanish = {
         home: "Inicio",
         users: "Usuarios",
         departments: "Departamentos",
+        units: "Unidades",
         courses: "Cursos",
         subjects: "Materias",
         students: "Estudiantes",

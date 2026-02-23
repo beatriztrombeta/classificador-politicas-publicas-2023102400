@@ -57,9 +57,12 @@ export function useTables(entity, rawRows) {
         getDataPath: tree.getPath,
         autoGroupColumnDef: {
           headerName: t(tree.groupColumn.headerName),
+          ...(tree.groupColumn.autoGroupColumnDef ?? {}),
           cellRendererParams: {
-            suppressCount: tree.groupColumn.suppressCount
-          }
+            suppressCount: tree.groupColumn.suppressCount,
+            ...(tree.groupColumn.cellRendererParams ?? {})
+          },
+          ...(tree.groupColumn.valueGetter ? { valueGetter: tree.groupColumn.valueGetter } : {})
         }
       }
     }

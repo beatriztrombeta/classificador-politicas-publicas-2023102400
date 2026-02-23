@@ -10,9 +10,9 @@ export const navigationItems = [
     titleKey: 'home.title.users'
   },
   {
-    name: 'departments',
-    path: '/departments',
-    titleKey: 'home.title.departments'
+    name: 'units',
+    path: '/units',
+    titleKey: 'home.title.units'
   },
   {
     name: 'courses',

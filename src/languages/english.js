@@ -5,6 +5,7 @@ const english = {
         home: "Home",
         users: "Users",
         departments: "Departaments",
+        units: "Units",
         courses: "Courses",
         subjects: "Subjects",
         students: "Students",
