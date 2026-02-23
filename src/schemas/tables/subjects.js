@@ -1,5 +1,4 @@
 import StudentButtonCellRenderer from "@/components/StudentButtonCellRenderer.vue";
-import { impactColumn } from "@/utils/impactColumn";
 
 export default {
   columns: [
@@ -34,54 +33,20 @@ export default {
           pinned: 'left',
           width: 120,
           cellRenderer: 'StudentButtonCellRenderer',
-          rowSpan: params => params.data._rowType === 'data' ? 2 : 1,
-          cellClassRules: {
-            'cell-span': params => params.data._rowType === 'data'
-          }
-        }
-        ,
-        impactColumn(
-          'CONCEITO',
-          'Conceito',
-          { headerTooltip: 'Conceito' }),
-        impactColumn(
-          'FREQUENCIA',
-          'Frequência',
-          { headerTooltip: 'Frequência' }),
-        impactColumn(
-          'TIPO_EFETIVACAO',
-          'Tipo de Efetivação',
-          { headerTooltip: 'Tipo de Efetivação' }),
-        impactColumn(
-          'TIPO_NOTA',
-          'Tipo de Nota',
-          { headerTooltip: 'Tipo de Nota' }),
-        impactColumn(
-          'NOTA',
-          'Nota',
-          { headerTooltip: 'Nota' }),
+        },
+        { field: 'CONCEITO', headerName: 'Conceito', headerTooltip: 'Conceito' },
+        { field: 'FREQUENCIA', headerName: 'Frequência', headerTooltip: 'Frequência' },
+        { field: 'TIPO_EFETIVACAO', headerName: 'Tipo de Efetivação', headerTooltip: 'Tipo de Efetivação' },
+        { field: 'TIPO_NOTA', headerName: 'Tipo de Nota', headerTooltip: 'Tipo de Nota' },
+        { field: 'NOTA', headerName: 'Nota', headerTooltip: 'Nota' },
       ],
       onFirstDataRendered: params => {
         params.api.sizeColumnsToFit()
       }
     },
+
     getDetailRowData(params) {
-      const rows = []
-
-      params.data.children?.forEach(aluno => {
-        rows.push({
-          ...aluno,
-          _rowType: 'data'
-        })
-
-        rows.push({
-          ...aluno.impact,
-          _rowType: 'impact'
-        })
-      })
-
-      params.successCallback(rows)
+      params.successCallback(params.data.children ?? [])
     }
   }
-
 }
