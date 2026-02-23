@@ -22,7 +22,8 @@ export function useSignup() {
     switch (signup.categoria) {
       case 'ALUN':
         return 'Anexe seu comprovante de matrícula (em pdf).'
-
+      case 'ADMIN':
+        return 'Anexe arquivos que comprovem que você tem autorização para administrar a plataforma.'
       case 'REI':
       case 'PROREI':
       case 'DEP':
@@ -39,6 +40,7 @@ export function useSignup() {
   const sources = reactive({
     campus: [],
     categorias: [
+      { value: 'ADMIN', label: 'Administrador' },
       { value: 'REI', label: 'Reitoria' },
       { value: 'PROREI', label: 'Pró-Reitoria' },
       { value: 'DEP', label: 'Departamento' },
@@ -66,6 +68,7 @@ export function useSignup() {
   async function fetchCategorias() {
     loading.categorias = true
     sources.categorias = [
+      { value: 'ADMIN', label: 'Administrador' },
       { value: 'REI', label: 'Reitoria' },
       { value: 'PROREI', label: 'Pró-Reitoria' },
       { value: 'DEP', label: 'Departamento' },

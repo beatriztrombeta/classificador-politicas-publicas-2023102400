@@ -5,6 +5,7 @@ const portuguese = {
         home: "Início",
         users: "Usuários",
         departments: "Departamentos",
+        units: "Unidades",
         courses: "Cursos",
         subjects: "Matérias",
         students: "Discentes",

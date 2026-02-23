@@ -4,11 +4,11 @@ import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import SignupView from '@/views/signup/SignupView.vue'
 import UsersView from '@/views/UsersView.vue'
-import DepsView from '@/views/DepsView.vue'
 import CoursesView from '@/views/CoursesView.vue'
 import SubjectsView from '@/views/SubjectsView.vue'
 import StudentsView from '@/views/StudentsView.vue'
 import DefaultLayout from '@/views/layout/DefaultLayout.vue'
+import UnitsView from '@/views/UnitsView.vue'
 
 const routes = [
   {
@@ -51,11 +51,11 @@ const routes = [
         }
       },
       {
-        path: 'departments',
-        name: 'departments',
-        component: DepsView,
+        path: 'units',
+        name: 'units',
+        component: UnitsView,
         meta: {
-          titleKey: 'home.title.departments'
+          titleKey: 'home.title.units'
         }
       },
       {

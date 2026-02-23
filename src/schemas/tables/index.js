@@ -1,12 +1,12 @@
 import courses from './courses'
-import departments from './departments'
+import units from './units'
 import students from './students'
 import subjects from './subjects'
 import users from './users'
 
 export {
   courses,
-  departments,
+  units,
   students,
   subjects,
   users
