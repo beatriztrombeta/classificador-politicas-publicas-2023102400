@@ -1,12 +1,20 @@
 <script setup>
 import { useI18n } from "vue-i18n";
 import { useTheme } from "@/composable/useTheme";
-import { inject } from 'vue';
+import { inject } from 'vue'
 
+const { signup, next, sendCode, verification } = inject('signup')
 const { t } = useI18n();
 useTheme();
 
-const { signup, next } = inject('signup');
+async function handleSubmit() {
+  try {
+    await sendCode()
+    next()
+  } catch (e) {
+    verification.error = e?.message ?? 'Falha ao enviar código'
+  }
+}
 </script>
 
 <template>
@@ -14,7 +22,7 @@ const { signup, next } = inject('signup');
     <h1>Cadastre-se aqui!</h1>
     <img src="@/assets/images/signup-1.png" alt="" />
     <section>
-      <form @submit.prevent="next">
+      <form @submit.prevent="handleSubmit">
         <div>
           <label class="label-form">
             {{ t("signup.emailLabel") }}

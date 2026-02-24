@@ -1,14 +1,13 @@
 <script setup>
-import { computed, inject, watch } from 'vue'
+import { computed, inject, watch, onMounted } from 'vue'
 import { signupFields } from '@/schemas/signupFields'
 import { resolveComponent } from '@/utils/resolveComponents'
+import { cpfRegex, telefoneRegex, maskCPF, maskTelefone } from '@/utils/regex'
 
-const { signup, next, sources } = inject('signup')
+const { signup, next, sources, loading, fetchCampus, fetchDepartamentos, createUser, verification } = inject('signup')
 signup.form ??= {}
 
-const fields = computed(() =>
-  signupFields[signup.categoria] || []
-)
+const fields = computed(() => signupFields[signup.categoria] || [])
 
 const resolvedFields = computed(() =>
   fields.value.map(field => ({
@@ -17,19 +16,53 @@ const resolvedFields = computed(() =>
   }))
 )
 
-const isDisabled = (field) =>
-  field.disabled || (field.dependsOn && !signup.form[field.dependsOn])
+const isDisabled = (field) => field.disabled || (field.dependsOn && !signup.form[field.dependsOn])
 
 watch(
   () => ({ ...signup.form }),
   (form) => {
     fields.value.forEach(field => {
-      if (field.dependsOn && !form[field.dependsOn]) {
-        delete signup.form[field.name]
-      }
+      if (field.dependsOn && !form[field.dependsOn]) delete signup.form[field.name]
     })
   }
 )
+
+onMounted(async () => {
+  try {
+    if (!sources.campus?.length) await fetchCampus()
+
+    if (!sources.departamentos?.length) await fetchDepartamentos({ campusId: signup.form.campus || null, unidadeId: signup.form.unidade || null })
+  } catch (e) {
+    console.error('Erro ao carregar fontes do formulário:', e)
+  }
+})
+
+function pickFirstFileFromForm(formObj) {
+  for (const v of Object.values(formObj || {})) {
+    if (v instanceof File) return v
+    if (Array.isArray(v) && v[0] instanceof File) return v[0]
+  }
+  return null
+}
+
+async function handleSubmit() {
+  const cpf = (signup.form?.cpf ?? '').toString().trim()
+  const telefone = (signup.form?.telefone ?? '').toString().trim()
+
+  if (cpf && !cpfRegex.test(cpf)) throw new Error('CPF inválido.')
+  if (telefone && !telefoneRegex.test(telefone)) throw new Error('Telefone inválido. Use (xx) xxxxx-xxxx.')
+  try {
+    if (!verification?.verified) throw new Error('Você precisa validar o código do e-mail antes de finalizar.')
+
+    const file = pickFirstFileFromForm(signup.form)
+    await createUser(file)
+
+    next()
+  } catch (e) {
+    console.error(e)
+    alert(e?.message ?? 'Erro ao finalizar cadastro.')
+  }
+}
 </script>
 
 <template>
@@ -40,15 +73,18 @@ watch(
       <div class="form-grid">
         <div v-for="field in resolvedFields" :key="field.name" class="form-col"
           :style="{ gridColumn: `span ${field.col ?? 12}` }">
-          <component :is="field.resolvedComponent" v-model="signup.form[field.name]" :label="field.label"
-            :required="field.required" :type="field.inputType" :source="sources[field.sourceKey]"
+          <component :is="field.resolvedComponent" :modelValue="signup.form[field.name]" @update:modelValue="(val) => {
+            if (field.name === 'cpf') signup.form[field.name] = maskCPF(val)
+            else if (field.name === 'telefone') signup.form[field.name] = maskTelefone(val)
+            else signup.form[field.name] = val
+          }" :label="field.label" :required="field.required" :type="field.inputType" :source="sources[field.sourceKey]"
             :disabled="isDisabled(field)" :multiple="field.multiple" />
         </div>
       </div>
 
       <div id="button">
-        <button class="blue-button" @click="next">
-          Finalizar cadastro
+        <button class="blue-button" @click="handleSubmit" :disabled="loading.createUser">
+          {{ loading.createUser ? 'Enviando...' : 'Finalizar cadastro' }}
         </button>
       </div>
     </section>
