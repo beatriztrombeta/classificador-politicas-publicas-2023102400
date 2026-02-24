@@ -1,9 +1,27 @@
 <script setup>
 import { useI18n } from "vue-i18n";
-import { inject } from 'vue';
+import { inject } from "vue";
 
 const { t } = useI18n();
-const { signup, next } = inject('signup');
+
+const { signup, next, sendCode, verifyCode, verification } = inject("signup");
+
+async function handleVerify() {
+  try {
+    await verifyCode(verification.code);
+    next();
+  } catch (e) {
+    verification.error = e?.message ?? "Código inválido";
+  }
+}
+
+async function handleResend() {
+  try {
+    await sendCode();
+  } catch (e) {
+    verification.error = e?.message ?? "Falha ao reenviar";
+  }
+}
 </script>
 
 <template>
@@ -11,16 +29,22 @@ const { signup, next } = inject('signup');
     <img id="locker" src="@/assets/images/auth-image.png" alt="" />
     <section>
       <p>{{ t("auth.instruction") }}</p>
-      <form @submit.prevent="next">
+
+      <form @submit.prevent="handleVerify">
         <div>
-          <label class="label-form" for="">{{ t("auth.codeLabel") }}</label>
-          <input class="input-form" type="text" />
+          <label class="label-form">{{ t("auth.codeLabel") }}</label>
+          <input class="input-form" type="text" v-model="verification.code" />
+          <small v-if="verification.error" style="color: #c00">{{ verification.error }}</small>
         </div>
+
         <div id="button-wrapper">
-          <button class="blue-button" :disabled="!signup.email" @click="next">
+          <button class="blue-button" :disabled="!verification.code || verification.verifying">
             {{ t("signup.continue") }}
           </button>
-          <a href="#">Reenviar código</a>
+
+          <a href="#" @click.prevent="handleResend" :style="{ opacity: verification.sending ? 0.6 : 1 }">
+            Reenviar código
+          </a>
         </div>
       </form>
     </section>
