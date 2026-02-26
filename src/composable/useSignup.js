@@ -17,10 +17,9 @@ async function safeJson(res) {
 }
 
 function normalizeErrorMessage(res, data) {
-  // FastAPI geralmente devolve { detail: string | object | array }
   if (data?.detail) {
     if (typeof data.detail === 'string') return data.detail
-    try { return JSON.stringify(data.detail) } catch { /* ignore */ }
+    try { return JSON.stringify(data.detail) } catch { }
   }
   return `Erro ${res.status}`
 }
@@ -52,9 +51,6 @@ function assertRequired(value, message) {
   if (value === undefined || value === null || String(value).trim() === '') throw new Error(message)
 }
 
-/**
- * Composable
- */
 export function useSignup() {
   const signup = reactive({
     step: 1,
@@ -122,9 +118,7 @@ export function useSignup() {
     }
   })
 
-  /**
-   * Email verification
-   */
+
   async function sendCode() {
     verification.error = ''
     verification.sending = true
@@ -161,9 +155,6 @@ export function useSignup() {
     }
   }
 
-  /**
-   * Public sources
-   */
   async function fetchCampus() {
     loading.campus = true
     try {
@@ -214,9 +205,6 @@ export function useSignup() {
     }
   }
 
-  /**
-   * Create user
-   */
   function buildCreateUserPayload(extra = {}) {
     return {
       email: extra.email ?? signup.email,
@@ -239,7 +227,6 @@ export function useSignup() {
   function buildCreateUserFormData(payload, file) {
     const fd = new FormData()
 
-    // obrigatórios (backend)
     assertRequired(file, 'Arquivo PDF é obrigatório (campo "file").')
     assertRequired(payload.email, 'Email é obrigatório.')
     assertRequired(payload.categoria, 'Categoria é obrigatória.')
@@ -247,14 +234,12 @@ export function useSignup() {
     assertRequired(payload.cpf, 'CPF é obrigatório.')
     assertRequired(payload.telefone, 'Telefone é obrigatório.')
 
-    // campos simples
     appendIf(fd, 'email', payload.email)
     appendIf(fd, 'categoria', payload.categoria)
     appendIf(fd, 'nome', payload.nome)
     appendIf(fd, 'cpf', payload.cpf)
     appendIf(fd, 'telefone', payload.telefone)
 
-    // opcionais
     appendIf(fd, 'ra', payload.ra)
     appendIf(fd, 'campus_id', payload.campus_id)
     appendIf(fd, 'unidade_id', payload.unidade_id)
@@ -262,7 +247,6 @@ export function useSignup() {
     appendIf(fd, 'curso_id', payload.curso_id)
     appendIf(fd, 'proreitoria_id', payload.proreitoria_id)
 
-    // lista
     if (Array.isArray(payload.disciplinas)) {
       for (const id of payload.disciplinas) appendIf(fd, 'disciplinas', id)
     }
@@ -277,7 +261,6 @@ export function useSignup() {
 
     loading.createUser = true
     try {
-      // aqui não usamos requestJson porque é multipart/form-data
       const res = await fetch(`${API_BASE}/users`, {
         method: 'POST',
         body: fd,
@@ -292,9 +275,6 @@ export function useSignup() {
     }
   }
 
-  /**
-   * Navigation
-   */
   function next() {
     if (signup.step === 3) {
       if (signup.email) signup.form.email ??= signup.email
@@ -307,9 +287,6 @@ export function useSignup() {
     if (signup.step > 1) signup.step--
   }
 
-  /**
-   * Reactive dependencies (select cascades)
-   */
   watch(() => signup.form.campus, (campus) => {
     signup.form.unidade = ''
     signup.form.curso = ''
@@ -322,7 +299,10 @@ export function useSignup() {
     sources.cursos = []
     sources.disciplinas = []
 
-    if (campus) fetchUnidades(campus)
+    if (campus) {
+      fetchUnidades(campus)
+      fetchDepartamentos({ campusId: campus, unidadeId: null })
+    }
   })
 
   watch(() => signup.form.unidade, (unidade) => {
@@ -331,7 +311,10 @@ export function useSignup() {
     sources.cursos = []
     sources.disciplinas = []
 
-    if (unidade) fetchCursos(unidade)
+    if (unidade) {
+      fetchDepartamentos({ unidadeId: unidade, campusId: signup.form.campus || null })
+      fetchCursos(unidade)
+    }
   })
 
   watch(() => signup.form.curso, (curso) => {
@@ -340,9 +323,6 @@ export function useSignup() {
     if (curso) fetchDisciplinas(curso)
   })
 
-  /**
-   * Provide
-   */
   const api = {
     signup,
     next,
