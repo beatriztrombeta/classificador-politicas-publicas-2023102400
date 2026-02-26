@@ -2,17 +2,33 @@
 import { computed, inject, watch, onMounted } from 'vue'
 import { signupFields } from '@/schemas/signupFields'
 import { resolveComponent } from '@/utils/resolveComponents'
+import BaseMultiSelect from '@/components/BaseMultiSelect.vue'
 import { cpfRegex, telefoneRegex, maskCPF, maskTelefone } from '@/utils/regex'
 
 const { signup, next, sources, loading, fetchCampus, fetchDepartamentos, createUser, verification } = inject('signup')
 signup.form ??= {}
 
-const fields = computed(() => signupFields[signup.categoria] || [])
+const categoriaKey = computed(() => ({
+  'ADMIN': 'ADMIN',
+  'REITORIA': 'REI',
+  'PRO-REITORIA': 'PROREI',
+  'DEPARTAMENTO': 'DEP',
+  'COORDENAÇÃO': 'COORD',
+  'PROFESSOR': 'PROF',
+  'ALUNO': 'ALUN'
+}[signup.categoria] || 'ADMIN'))
+
+const fields = computed(() => signupFields[categoriaKey.value] || [])
+
+const resolveComponentExt = (type) => {
+  if (type === 'multiselect') return BaseMultiSelect
+  return resolveComponent(type)
+}
 
 const resolvedFields = computed(() =>
   fields.value.map(field => ({
     ...field,
-    resolvedComponent: resolveComponent(field.component)
+    resolvedComponent: resolveComponentExt(field.component)
   }))
 )
 

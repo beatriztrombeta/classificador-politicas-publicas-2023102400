@@ -12,7 +12,7 @@ export function maskCPF(value) {
 }
 
 export function maskTelefone(value) {
-  const d = onlyDigits(value).slice(0, 11) // (xx) xxxxx-xxxx
+  const d = onlyDigits(value).slice(0, 11)
   if (d.length === 0) return ""
   if (d.length <= 2) return `(${d}`
   if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`
