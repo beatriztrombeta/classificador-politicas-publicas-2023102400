@@ -3,9 +3,12 @@ import { ref, watch, onMounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { useTheme } from "@/composable/useTheme";
 import NavSignIn from "@/components/NavSignIn.vue";
+import { useRouter } from "vue-router";
+import ErrorPopup from "@/components/ErrorPopup.vue";
 
 const { t } = useI18n();
 const { isDark } = useTheme();
+const router = useRouter();
 
 const UnespLogo = ref("");
 
@@ -15,23 +18,64 @@ function updateImages() {
     : new URL("../assets/images/UNESP-light.png", import.meta.url).href;
 }
 
+const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const email = ref("");
+const loading = ref(false);
+const errorMsg = ref("");
+
+async function onSendCode() {
+  errorMsg.value = "";
+
+  const e = email.value.trim().toLowerCase();
+  if (!e) {
+    showError("Informe um e-mail válido.");
+    return;
+  }
+
+  loading.value = true;
+  try {
+    const res = await fetch(`${apiBase}/auth/send-code`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: e }),
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body?.detail || "Falha ao enviar código.");
+    }
+
+    router.push({ path: "/auth", query: { email: e } });
+  } catch (err) {
+    showError(err?.message || "Erro inesperado.");
+  } finally {
+    loading.value = false;
+  }
+}
+
+function showError(msg) {
+  errorMsg.value = msg;
+}
+
 onMounted(updateImages);
 watch(isDark, updateImages);
 </script>
-
 
 <template>
   <NavSignIn />
   <main>
     <img :src="UnespLogo" alt="UNESP logo" />
     <section>
-      <form action="">
+      <form @submit.prevent="onSendCode">
         <div>
-          <label class="label-form" for="">{{ t("login.emailLabel") }}</label>
-          <input class="input-form" type="email" />
+          <label class="label-form">{{ t("login.emailLabel") }}</label>
+          <input class="input-form" type="email" v-model="email" autocomplete="email" />
         </div>
         <div id="button-wrapper">
-          <button class="blue-button">{{ t("login.continue") }}</button>
+          <button class="blue-button" type="submit" :disabled="loading">
+            {{ loading ? "Enviando..." : t("login.continue") }}
+          </button>
           <router-link to="/signup" class="signup-link">
             Não possuí uma conta? Cadastre-se aqui
           </router-link>
@@ -39,6 +83,7 @@ watch(isDark, updateImages);
       </form>
     </section>
   </main>
+  <ErrorPopup v-model="errorMsg" title="Erro" :autoCloseMs="4000" />
 </template>
 
 <style scoped>
