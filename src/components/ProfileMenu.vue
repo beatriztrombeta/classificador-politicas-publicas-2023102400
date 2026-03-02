@@ -21,9 +21,21 @@ function openSettings() {
   emit("close");
 }
 
-function logout() {
+async function logout() {
   emit("close");
-  router.push("/login");
+
+  const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+  try {
+    await fetch(`${apiBase}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+  } finally {
+    localStorage.removeItem("auth");
+
+    window.location.href = "/login";
+  }
 }
 </script>
 
