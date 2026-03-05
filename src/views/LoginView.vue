@@ -93,7 +93,7 @@ main {
   justify-content: center;
   align-items: center;
   gap: 3rem;
-  height: 100vw;
+  min-height: 100vh;
   padding-bottom: 3rem;
 }
 
