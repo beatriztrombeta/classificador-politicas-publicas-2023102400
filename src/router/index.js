@@ -103,13 +103,11 @@ let isAuthedCache = false;
 
 async function checkAuth() {
   const now = Date.now();
-  if (now - authCheckedAt < 30_000) return isAuthedCache;
+
+  if (now - authCheckedAt < 30_000 && isAuthedCache) return true;
 
   try {
-    const res = await fetch(`${apiBase}/auth/me`, {
-      method: "GET",
-      credentials: "include",
-    });
+    const res = await fetch(`${apiBase}/auth/me`, { method: "GET", credentials: "include" });
     isAuthedCache = res.ok;
   } catch {
     isAuthedCache = false;
