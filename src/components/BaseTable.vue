@@ -18,6 +18,23 @@ const props = defineProps({
   }
 })
 
+const getRowId = (params) => {
+  const d = params.data || {}
+
+  return String(
+    d.id ??
+    d.ID_ALUNO_GRADUACAO ??
+    d.id_disciplina ??
+    d.id_curso ??
+    d.id_unidade ??
+    d.disciplineId ??
+    d.courseId ??
+    d.unidadeId ??
+    d.treePath?.join('/') ??
+    JSON.stringify([d.name, d.nome, d._rowType])
+  )
+}
+
 const components = {
   StatusTagCellRenderer,
   DocumentButtonCellRenderer,
@@ -28,7 +45,7 @@ const components = {
 const {
   columnDefs,
   gridOptions,
-  rowData
+  rowData: tableRowData
 } = useTables(props.entity, computed(() => props.rowData))
 
 const defaultColDef = computed(() => ({
@@ -51,17 +68,27 @@ const enhancedColumnDefs = computed(() =>
     return col
   })
 )
+
+const pagination = computed(() => props.entity === 'students')
+const paginationPageSize = computed(() => props.entity === 'students' ? 50 : undefined)
 </script>
 
 <template>
   <ag-grid-vue
     class="ag-theme-alpine grid"
     :columnDefs="enhancedColumnDefs"
-    :rowData="rowData"
+    :rowData="tableRowData"
     :components="components"
     :defaultColDef="defaultColDef"
+    :pagination="pagination"
+    :paginationPageSize="paginationPageSize"
+    :paginationPageSizeSelector="pagination ? [25, 50, 100, 200] : undefined"
     v-bind="gridOptions"
     domLayout="autoHeight"
     theme="legacy"
+    :getRowId="getRowId"
+    :keepDetailRows="true"
+    :keepDetailRowsCount="30"
+    :suppressScrollOnNewData="true"
   />
 </template>

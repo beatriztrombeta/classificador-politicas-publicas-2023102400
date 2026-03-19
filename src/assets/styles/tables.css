@@ -44,6 +44,7 @@ html.light .ag-theme-alpine {
 
 .grid {
     width: 100%;
+    padding-bottom: 2rem;
 }
 
 .status-tag {
@@ -116,6 +117,18 @@ html.light .ag-theme-alpine {
   color: #198775;
 }
 
+.role-tag.rei {
+  color: #0d6efd;
+}
+
+.role-tag.prorei {
+  color: #fd7e14;
+}
+
+.role-tag.coord {
+  color: #20a4a8;
+}
+
 .role-tag.default {
   color: var(--ag-foreground-color);
 }
@@ -140,5 +153,18 @@ html.light .ag-theme-alpine {
   border: none;
 }
 
+.ag-theme-alpine .student-link-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font: inherit !important;
+  line-height: inherit !important;
+  color: var(--color-secondary) !important;
+  cursor: pointer !important;
+  text-decoration: underline !important;
+}
 
 
