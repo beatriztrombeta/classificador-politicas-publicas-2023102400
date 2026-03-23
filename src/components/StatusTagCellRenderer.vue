@@ -8,24 +8,25 @@ const props = defineProps({
   }
 })
 
-const status = computed(() => props.params.value)
+const rawStatus = computed(() => props.params?.value ?? '')
+
+const normalizedStatus = computed(() =>
+  String(rawStatus.value).trim().toUpperCase()
+)
 
 const statusMap = {
-  pending: {
-    label: 'Pendente',
-    class: 'pending'
-  },
-  active: {
-    label: 'Ativo',
-    class: 'active'
-  },
-  rejected: {
-    label: 'Rejeitado',
-    class: 'rejected'
-  }
+  PENDENTE: { label: 'Pendente', class: 'pending' },
+  PENDING: { label: 'Pendente', class: 'pending' },
+  APROVADO: { label: 'Aprovado', class: 'active' },
+  ACTIVE: { label: 'Aprovado', class: 'active' },
+  REJEITADO: { label: 'Rejeitado', class: 'rejected' },
+  REJECTED: { label: 'Rejeitado', class: 'rejected' }
 }
 
-const current = computed(() => statusMap[status.value] || null)
+const current = computed(() => statusMap[normalizedStatus.value] || {
+  label: rawStatus.value,
+  class: 'pending'
+})
 </script>
 
 <template>

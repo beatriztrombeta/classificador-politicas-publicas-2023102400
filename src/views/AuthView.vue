@@ -39,12 +39,42 @@ async function verifyCode() {
       credentials: "include",
     });
 
+    const body = await res.json().catch(() => ({}));
+
     if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
       throw new Error(body?.detail || "Código inválido ou expirado.");
     }
 
-    router.push("/home");
+    localStorage.setItem("auth_user", JSON.stringify({
+      id_usuario: body?.id_usuario,
+      id_categoria_usuario: body?.id_categoria_usuario,
+      email: body?.email,
+      nome: body?.nome
+    }));
+
+    window.dispatchEvent(new CustomEvent("auth-user-updated", {
+      detail: {
+        id_usuario: body?.id_usuario,
+        id_categoria_usuario: body?.id_categoria_usuario,
+        email: body?.email,
+        nome: body?.nome
+      }
+    }));
+
+    const categoryId = Number(body?.id_categoria_usuario);
+    const userId = Number(body?.id_usuario);
+
+    if (categoryId === 7 && userId) {
+      router.push(`/students/${userId}`);
+    } else if ([2, 3].includes(categoryId)) {
+      router.push("/units");
+    } else if ([4, 5].includes(categoryId)) {
+      router.push("/courses");
+    } else if (categoryId === 6) {
+      router.push("/subjects");
+    } else {
+      router.push("/home");
+    }
   } catch (err) {
     showError(err?.message || "Erro inesperado.");
   } finally {
@@ -89,13 +119,7 @@ async function resendCode() {
       <form @submit.prevent="verifyCode">
         <div>
           <label class="label-form">{{ t("auth.codeLabel") }}</label>
-          <input
-            class="input-form"
-            type="text"
-            v-model="code"
-            inputmode="numeric"
-            autocomplete="one-time-code"
-          />
+          <input class="input-form" type="text" v-model="code" inputmode="numeric" autocomplete="one-time-code" />
         </div>
 
         <div id="button-wrapper">

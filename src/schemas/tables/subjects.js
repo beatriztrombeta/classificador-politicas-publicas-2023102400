@@ -1,52 +1,47 @@
-import StudentButtonCellRenderer from "@/components/StudentButtonCellRenderer.vue";
-
 export default {
   columns: [
-    { field: 'name', headerName: 'tables.general.name', cellRenderer: 'agGroupCellRenderer' }
+    { field: 'name', headerName: 'Nome da disciplina', cellRenderer: 'agGroupCellRenderer' }
   ],
 
   subtable: {
     mode: 'masterDetail',
 
     detailGridOptions: {
-      components: {
-        StudentButtonCellRenderer
-      },
-
-      suppressRowTransform: true,
-      tooltipShowDelay: 200,
-      tooltipHideDelay: 2000,
-      suppressColumnVirtualisation: true,
-
       defaultColDef: {
         flex: 1,
-        minWidth: 150,
-        sortable: false,
-        filter: false,
+        minWidth: 140,
+        sortable: true,
+        filter: true,
         resizable: true
       },
-
       columnDefs: [
-        {
-          field: 'ID_ALUNO_GRADUACAO',
-          headerName: 'ID',
-          pinned: 'left',
-          width: 120,
-          cellRenderer: 'StudentButtonCellRenderer',
-        },
-        { field: 'CONCEITO', headerName: 'Conceito', headerTooltip: 'Conceito' },
-        { field: 'FREQUENCIA', headerName: 'Frequência', headerTooltip: 'Frequência' },
-        { field: 'TIPO_EFETIVACAO', headerName: 'Tipo de Efetivação', headerTooltip: 'Tipo de Efetivação' },
-        { field: 'TIPO_NOTA', headerName: 'Tipo de Nota', headerTooltip: 'Tipo de Nota' },
-        { field: 'NOTA', headerName: 'Nota', headerTooltip: 'Nota' },
-      ],
-      onFirstDataRendered: params => {
-        params.api.sizeColumnsToFit()
-      }
+        { field: 'id_aluno_graduacao', headerName: 'ID Aluno' },
+        { field: 'nome_disciplina', headerName: 'Disciplina' },
+        { field: 'conceito', headerName: 'Conceito' },
+        { field: 'frequencia', headerName: 'Frequência' },
+        { field: 'tipo_efetivacao', headerName: 'Tipo Efetivação' },
+        { field: 'tipo_nota', headerName: 'Tipo Nota' },
+        { field: 'nota', headerName: 'Nota' }
+      ]
     },
 
-    getDetailRowData(params) {
-      params.successCallback(params.data.children ?? [])
+    async getDetailRowData(params) {
+      try {
+        if (Array.isArray(params.data.children)) {
+          params.successCallback(params.data.children)
+          return
+        }
+
+        if (typeof params.data.loadDetail === 'function') {
+          const children = await params.data.loadDetail()
+          params.successCallback(children)
+          return
+        }
+
+        params.successCallback([])
+      } catch (error) {
+        params.successCallback([])
+      }
     }
   }
 }

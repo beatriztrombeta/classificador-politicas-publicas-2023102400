@@ -8,40 +8,43 @@ const props = defineProps({
   }
 })
 
-const role = computed(() => props.params.value)
+const rawRole = computed(() => props.params?.value ?? '')
+
+const normalizedRole = computed(() =>
+  String(rawRole.value).trim().toUpperCase()
+)
 
 const roleMap = {
-  ADM: {
-    label: 'ADM',
-    class: 'adm'
-  },
-  REI: {
-    label: 'REI',
-    class: 'rei'
-  },
-  PROREI: {
-    label: 'PROREI',
-    class: 'prorei'
-  },
-  DEP: {
-    label: 'DEP',
-    class: 'dep'
-  },
-  COORD: {
-    label: 'COORD',
-    class: 'coord'
-  },
-  PROF: {
-    label: 'PROF',
-    class: 'prof'
-  },
-  STUDENT: {
-    label: 'STUDENT',
-    class: 'student'
-  }
+  ADM: { label: 'ADM', class: 'adm' },
+  ADMIN: { label: 'ADM', class: 'adm' },
+  ADMINISTRADOR: { label: 'ADM', class: 'adm' },
+
+  REI: { label: 'REI', class: 'rei' },
+  REITOR: { label: 'REI', class: 'rei' },
+
+  PROREI: { label: 'PRO-REI', class: 'prorei' },
+  PROREITOR: { label: 'PRO-REI', class: 'prorei' },
+  'PRO-REITOR': { label: 'PRO-REI', class: 'prorei' },
+
+  DEP: { label: 'DEP', class: 'dep' },
+  DEPARTAMENTO: { label: 'DEP', class: 'dep' },
+
+  COORD: { label: 'COORD', class: 'coord' },
+  COORDENADOR: { label: 'COORD', class: 'coord' },
+
+  PROF: { label: 'PROF', class: 'prof' },
+  PROFESSOR: { label: 'PROF', class: 'prof' },
+
+  STUDENT: { label: 'ALUNO', class: 'student' },
+  ALUNO: { label: 'ALUNO', class: 'student' }
 }
 
-const current = computed(() => roleMap[role.value] || { label: role.value, class: 'default' })
+const current = computed(() =>
+  roleMap[normalizedRole.value] || {
+    label: rawRole.value || '—',
+    class: 'default'
+  }
+)
 </script>
 
 <template>

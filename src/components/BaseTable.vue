@@ -69,8 +69,8 @@ const enhancedColumnDefs = computed(() =>
   })
 )
 
-const pagination = computed(() => props.entity === 'students')
-const paginationPageSize = computed(() => props.entity === 'students' ? 50 : undefined)
+const pagination = computed(() => true)
+const paginationPageSize = computed(() => 25)
 </script>
 
 <template>
@@ -82,7 +82,7 @@ const paginationPageSize = computed(() => props.entity === 'students' ? 50 : und
     :defaultColDef="defaultColDef"
     :pagination="pagination"
     :paginationPageSize="paginationPageSize"
-    :paginationPageSizeSelector="pagination ? [25, 50, 100, 200] : undefined"
+    :paginationPageSizeSelector="[25, 50, 100, 200]"
     v-bind="gridOptions"
     domLayout="autoHeight"
     theme="legacy"

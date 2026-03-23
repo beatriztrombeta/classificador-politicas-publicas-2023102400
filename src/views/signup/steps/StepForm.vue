@@ -49,7 +49,6 @@ onMounted(async () => {
 
     if (!sources.departamentos?.length) await fetchDepartamentos({ campusId: signup.form.campus || null, unidadeId: signup.form.unidade || null })
   } catch (e) {
-    console.error('Erro ao carregar fontes do formulário:', e)
   }
 })
 
@@ -75,7 +74,6 @@ async function handleSubmit() {
 
     next()
   } catch (e) {
-    console.error(e)
     alert(e?.message ?? 'Erro ao finalizar cadastro.')
   }
 }

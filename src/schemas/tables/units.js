@@ -13,7 +13,7 @@ export default {
       cellStyle: params => {
         const value = params.value
         const color = riskColor(value)
-        if (!color) return null
+        if (value == null || color == null) return null
         return { backgroundColor: color }
       }
     }
@@ -40,13 +40,21 @@ export default {
           const parentId = String(parent.id)
           treeLabelById.set(parentId, parent.name)
 
-          rows.push({ ...parent, __type: 'parent', treePath: [parentId] })
+          rows.push({
+            ...parent,
+            __type: 'parent',
+            treePath: [parentId]
+          })
 
           parent.children?.forEach(child => {
             const childId = String(child.id)
             treeLabelById.set(childId, child.name)
 
-            rows.push({ ...child, __type: 'child', treePath: [parentId, childId] })
+            rows.push({
+              ...child,
+              __type: 'child',
+              treePath: [parentId, childId]
+            })
           })
         })
 

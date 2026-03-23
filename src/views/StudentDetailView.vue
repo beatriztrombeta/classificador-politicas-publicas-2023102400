@@ -144,7 +144,6 @@ onMounted(async () => {
       loadSubjects()
     ])
   } catch (e) {
-    console.error(e)
     error.value = 'Não foi possível carregar os dados do aluno.'
   } finally {
     loading.value = false
