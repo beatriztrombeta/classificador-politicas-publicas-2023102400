@@ -1,9 +1,9 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useTheme } from '@/composable/useTheme'
-import { navigationItems } from '@/schemas/navigation'
+import { getAllowedNavigationByCategory } from '@/schemas/navigation'
 
 import ProfileMenu from './ProfileMenu.vue'
 import SettingsModal from './SettingsModal.vue'
@@ -15,6 +15,7 @@ const route = useRoute()
 const UnespLogo = ref('')
 const showSettings = ref(false)
 const showMenu = ref(false)
+const userCategoryId = ref(null)
 
 function updateImages() {
   UnespLogo.value = isDark.value
@@ -30,8 +31,36 @@ function openSettings() {
   showSettings.value = true
 }
 
-onMounted(updateImages)
+function loadUserFromStorage() {
+  try {
+    const user = JSON.parse(localStorage.getItem('auth_user') || '{}')
+    userCategoryId.value = Number(user?.id_categoria_usuario) || null
+  } catch {
+    userCategoryId.value = null
+  }
+}
+
+function handleAuthUserUpdated() {
+  loadUserFromStorage()
+}
+
+onMounted(() => {
+  updateImages()
+  loadUserFromStorage()
+  window.addEventListener('auth-user-updated', handleAuthUserUpdated)
+  window.addEventListener('storage', handleAuthUserUpdated)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('auth-user-updated', handleAuthUserUpdated)
+  window.removeEventListener('storage', handleAuthUserUpdated)
+})
+
 watch(isDark, updateImages)
+
+const filteredNavigationItems = computed(() => {
+  return getAllowedNavigationByCategory(userCategoryId.value)
+})
 
 const isActive = (name) => route.name === name
 </script>
@@ -42,7 +71,8 @@ const isActive = (name) => route.name === name
       <img :src="UnespLogo" alt="UNESP logo" />
 
       <div id="tabela-nav">
-        <router-link v-for="item in navigationItems" :key="item.name" :to="item.path" custom v-slot="{ navigate }">
+        <router-link v-for="item in filteredNavigationItems" :key="item.name" :to="item.path" custom
+          v-slot="{ navigate }">
           <button :class="{ active: isActive(item.name) }" @click="navigate">
             {{ t(item.titleKey) }}
           </button>

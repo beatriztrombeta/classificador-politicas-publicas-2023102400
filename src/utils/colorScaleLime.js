@@ -1,13 +1,14 @@
-export function limeColor(value, max = 1) {
+export function limeColor(value, max = 0.1) {
   if (value == null) return null
 
-  const v = Math.max(-max, Math.min(max, value))
+  const v = Math.max(-max, Math.min(max, Number(value)))
+  const ratio = v / max
 
-  if (v > 0.66) return 'var(--red-rate-pastel)'
-  if (v > 0.33) return 'var(--orange-rate-pastel)'
+  if (ratio >= 0.66) return 'var(--red-rate-pastel)'
+  if (ratio >= 0.33) return 'var(--orange-rate-pastel)'
 
-  if (v < -0.66) return 'var(--green-rate-pastel)'
-  if (v < -0.33) return 'var(--yellow-rate-pastel)'
+  if (ratio <= -0.66) return 'var(--green-rate-pastel)'
+  if (ratio <= -0.33) return 'var(--yellow-rate-pastel)'
 
   return null
 }

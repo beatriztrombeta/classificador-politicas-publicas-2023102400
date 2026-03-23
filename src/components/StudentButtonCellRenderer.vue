@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const props = defineProps({
@@ -11,27 +10,21 @@ const props = defineProps({
 
 const router = useRouter()
 
-const id = computed(() => props.params?.value)
+function openStudent() {
+  if (props.params?.data?._rowType !== 'data') return
 
-function goToStudent() {
-  if (!id.value) return
+  const alunoId = props.params?.data?.ID_ALUNO_GRADUACAO
+  if (!alunoId) return
 
   router.push({
     name: 'student-details',
-    params: { id: id.value }
+    params: { id: String(alunoId) }
   })
 }
 </script>
 
 <template>
-  <span v-if="id" class="student-link" @click="goToStudent">
-    {{ id }}
-  </span>
+  <button class="student-link-btn" @click="openStudent">
+    {{ params.value }}
+  </button>
 </template>
-
-<style scoped>
-.student-link {
-  cursor: pointer;
-  text-decoration: underline;
-}
-</style>

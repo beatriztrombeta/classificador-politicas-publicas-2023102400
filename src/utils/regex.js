@@ -18,3 +18,23 @@ export function maskTelefone(value) {
   if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2)}`
   return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`
 }
+
+export function maskDateTime(value) {
+  if (!value) return ""
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value)
+  }
+
+  const pad = (n) => String(n).padStart(2, "0")
+
+  const dia = pad(date.getDate())
+  const mes = pad(date.getMonth() + 1)
+  const ano = date.getFullYear()
+  const hora = pad(date.getHours())
+  const minuto = pad(date.getMinutes())
+
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`
+}
