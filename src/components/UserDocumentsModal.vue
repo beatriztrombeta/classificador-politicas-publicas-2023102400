@@ -1,6 +1,9 @@
 <script setup>
-import { ref } from 'vue'
-import { useUserApproval } from '@/composable/useUserApproval'
+import { computed, ref, watch, onMounted } from 'vue'
+import { maskDateTime } from '@/utils/regex'
+import { parseResponseSafely } from '@/utils/parseResponseSafely'
+
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 const props = defineProps({
   user: {
@@ -13,18 +16,126 @@ const emit = defineEmits(['approved', 'rejected', 'refresh', 'close'])
 
 const loadingApprove = ref(false)
 const loadingReject = ref(false)
+const loadingDocuments = ref(false)
 const errorMsg = ref('')
 const successMsg = ref('')
+const documentsError = ref('')
+const documentsState = ref([])
 
-const { approveUserByToken, rejectUserByToken } = useUserApproval()
+const userId = computed(() => props.user?.id ?? props.user?.id_usuario ?? null)
 
-async function approve() {
+const documents = computed(() => {
+  if (documentsState.value.length) return documentsState.value
+  return props.user?.documents ?? props.user?.documentos ?? []
+})
+
+const isPending = computed(() => {
+  const status = String(props.user?.status ?? props.user?.status_cadastro ?? '').trim().toUpperCase()
+  return status === 'PENDENTE' || status === 'PENDING'
+})
+
+function buildDocumentViewUrl(userId, docId) {
+  return `${apiBase}/admin/users/${userId}/documents/${docId}/view`
+}
+
+async function fetchUserDocuments(userId) {
+  const res = await fetch(`${apiBase}/admin/users/${userId}/documents`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+
+  const data = await parseResponseSafely(res)
+
+  if (!res.ok) {
+    throw new Error(
+      data?.detail ||
+      data?.message ||
+      `Erro ao carregar documentos (${res.status}).`
+    )
+  }
+
+  return Array.isArray(data?.items) ? data.items : []
+}
+
+async function loadDocuments() {
+  documentsError.value = ''
+
+  if (!userId.value) {
+    documentsState.value = []
+    return
+  }
+
+  loadingDocuments.value = true
+
+  try {
+    const items = await fetchUserDocuments(userId.value)
+
+    documentsState.value = items.map((doc) => ({
+      ...doc,
+      download_url: buildDocumentViewUrl(userId.value, doc.id_documento)
+    }))
+  } catch (err) {
+    documentsState.value = []
+    documentsError.value = err?.message || 'Erro ao carregar documentos.'
+  } finally {
+    loadingDocuments.value = false
+  }
+}
+
+async function approveUserById(userId) {
+  const res = await fetch(`${apiBase}/admin/users/${userId}/approve`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+
+  const data = await parseResponseSafely(res)
+
+  if (!res.ok) {
+    throw new Error(
+      data?.detail ||
+      data?.message ||
+      `Erro ao aprovar usuário (${res.status}).`
+    )
+  }
+
+  return data
+}
+
+async function rejectUserById(userId) {
+  const res = await fetch(`${apiBase}/admin/users/${userId}/reject`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json'
+    }
+  })
+
+  const data = await parseResponseSafely(res)
+
+  if (!res.ok) {
+    throw new Error(
+      data?.detail ||
+      data?.message ||
+      `Erro ao rejeitar usuário (${res.status}).`
+    )
+  }
+
+  return data
+}
+
+async function handleApprove() {
   errorMsg.value = ''
   successMsg.value = ''
   loadingApprove.value = true
 
   try {
-    await approveUserByToken(props.user.approval_token)
+    await approveUserById(userId.value)
     successMsg.value = 'Usuário aprovado com sucesso.'
     emit('approved', props.user)
     emit('refresh')
@@ -36,13 +147,13 @@ async function approve() {
   }
 }
 
-async function reject() {
+async function handleReject() {
   errorMsg.value = ''
   successMsg.value = ''
   loadingReject.value = true
 
   try {
-    await rejectUserByToken(props.user.approval_token)
+    await rejectUserById(userId.value)
     successMsg.value = 'Usuário rejeitado com sucesso.'
     emit('rejected', props.user)
     emit('refresh')
@@ -57,6 +168,18 @@ async function reject() {
 function close() {
   emit('close')
 }
+
+watch(
+  () => userId.value,
+  async (newValue) => {
+    if (newValue) await loadDocuments()
+  },
+  { immediate: true }
+)
+
+onMounted(async () => {
+  if (userId.value) await loadDocuments()
+})
 </script>
 
 <template>
@@ -102,48 +225,58 @@ function close() {
             </span>
           </p>
 
-          <p><strong>Status:</strong> {{ user.status || '—' }}</p>
+          <p><strong>Status:</strong> {{ user.status || user.status_cadastro || '—' }}</p>
         </div>
 
         <div class="documents-section">
           <h4>Documentos</h4>
 
-          <div v-if="!documents.length" class="empty-state">
+          <div v-if="loadingDocuments" class="empty-state">
+            Carregando documentos...
+          </div>
+
+          <div v-else-if="documentsError" class="error-msg">
+            {{ documentsError }}
+          </div>
+
+          <div v-else-if="!documents.length" class="empty-state">
             Nenhum documento encontrado.
           </div>
 
           <div v-else class="documents-list">
             <div v-for="doc in documents" :key="doc.id_documento" class="document-card">
-              <p><strong>Tipo:</strong> {{ doc.tipo_documento || '—' }}</p>
+              <p><strong>ID:</strong> {{ doc.id_documento || '—' }}</p>
               <p><strong>Arquivo:</strong> {{ doc.nome_arquivo || '—' }}</p>
-              <p><strong>Status:</strong> {{ doc.status_analise || '—' }}</p>
-              <p><strong>Enviado em:</strong> {{ maskDateTime(doc.data_envio) || '—' }}</p>
+              <p><strong>Tipo MIME:</strong> {{ doc.mime_type || '—' }}</p>
+              <p><strong>Enviado em:</strong> {{ maskDateTime(doc.data_envio || doc.data_upload) || '—' }}</p>
 
               <a v-if="doc.download_url" class="document-link" :href="doc.download_url" target="_blank"
                 rel="noopener noreferrer">
-                Clique aqui para abrir os documentos
+                Abrir documento
               </a>
             </div>
           </div>
         </div>
       </section>
+
       <footer class="modal-footer">
         <div class="actions">
-          <template>
-            <div>
-              <p v-if="errorMsg">{{ errorMsg }}</p>
-              <p v-if="successMsg">{{ successMsg }}</p>
+          <div class="messages">
+            <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+            <p v-if="successMsg" class="success-msg">{{ successMsg }}</p>
 
-              <button @click="handleApprove" :disabled="loadingApprove || loadingReject">
+            <div v-if="isPending" class="actions-buttons">
+              <button class="primary-btn button" @click="handleApprove" :disabled="loadingApprove || loadingReject">
                 {{ loadingApprove ? 'Aprovando...' : 'Aprovar' }}
               </button>
 
-              <button @click="handleReject" :disabled="loadingApprove || loadingReject">
+              <button class="danger-btn button" @click="handleReject" :disabled="loadingApprove || loadingReject">
                 {{ loadingReject ? 'Rejeitando...' : 'Rejeitar' }}
               </button>
             </div>
-          </template>
+          </div>
         </div>
+
         <button class="secondary-btn button" @click="close">
           Fechar
         </button>
@@ -189,9 +322,10 @@ hr {
 }
 
 .modal-footer {
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 1rem;
   margin-top: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .modal-body {
@@ -254,8 +388,21 @@ hr {
 
 .actions {
   display: flex;
-  flex-direction: row;
+  align-items: center;
   gap: 1rem;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actions-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
 }
 
 .button {
@@ -265,6 +412,11 @@ hr {
   border-radius: var(--radius-md);
   font-weight: 600;
   cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .primary-btn {
@@ -277,5 +429,15 @@ hr {
 
 .danger-btn {
   background: var(--red-rate-darker);
+}
+
+.error-msg {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.success-msg {
+  color: #2e7d32;
+  font-weight: 600;
 }
 </style>
