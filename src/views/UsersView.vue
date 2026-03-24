@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import BaseTable from '@/components/BaseTable.vue'
 import UserDocumentsModal from '@/components/UserDocumentsModal.vue'
 import { maskDateTime } from '@/utils/regex'
@@ -10,6 +10,15 @@ const rowData = ref([])
 const showModal = ref(false)
 const selectedUser = ref(null)
 
+const pendingUsers = computed(() => {
+  return rowData.value.filter(user => {
+    const status = String(user?.status ?? '').trim().toUpperCase()
+    return status === 'PENDENTE' || status === 'PENDING'
+  }).length
+})
+
+const havePending = computed(() => pendingUsers.value > 0)
+
 function openDocuments(user) {
   selectedUser.value = user
   showModal.value = true
@@ -18,6 +27,14 @@ function openDocuments(user) {
 function closeModal() {
   showModal.value = false
   selectedUser.value = null
+}
+
+async function handleUsersRefresh() {
+  try {
+    await loadUsers()
+  } catch (e) {
+    error('Erro ao atualizar usuários:', e)
+  }
 }
 
 async function loadUsers() {
@@ -58,6 +75,35 @@ onMounted(() => {
 </script>
 
 <template>
-  <BaseTable entity="users" :rowData="rowData" @open-documents="openDocuments" />
-  <UserDocumentsModal v-if="showModal" :user="selectedUser" @close="closeModal" />
+  <section>
+    <div v-if="havePending" class="warning-wrapper">
+      <p>⚠️</p>
+      <p>
+        Existem {{ pendingUsers }} usuários pendentes de aprovação para o uso do sistema
+      </p>
+    </div>
+
+    <BaseTable entity="users" :rowData="rowData" @open-documents="openDocuments" />
+  </section>
+  <UserDocumentsModal v-if="showModal && selectedUser" :user="selectedUser" @close="closeModal"
+    @refresh="handleUsersRefresh" />
 </template>
+
+<style scoped>
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.warning-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  border: solid 1px rgb(226, 44, 44);
+  border-radius: 0.7rem;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  align-items: center;
+}
+</style>
