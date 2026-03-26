@@ -1,9 +1,24 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import BaseTable from '@/components/BaseTable.vue'
+import { getCourseEvasion } from '@/schemas/tables/courses'
 
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const rowData = ref([])
+const loading = ref(false)
+
+async function attachCourseEvasion(rows) {
+  return await Promise.all(
+    rows.map(async (row) => {
+      try {
+        const evasion = await getCourseEvasion(row.id_curso)
+        return { ...row, evasion }
+      } catch {
+        return { ...row, evasion: null }
+      }
+    })
+  )
+}
 
 async function fetchCourseStudents(cursoId) {
   const url = `${apiBase}/cursos/${cursoId}/alunos`
@@ -24,58 +39,64 @@ async function fetchCourseStudents(cursoId) {
 }
 
 async function loadCourses() {
-  const url = `${apiBase}/cursos`
+  loading.value = true
 
-  const res = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { Accept: 'application/json' }
-  })
+  try {
+    const url = `${apiBase}/cursos`
 
+    const res = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' }
+    })
 
-  const text = await res.text()
+    const text = await res.text()
 
-  if (!res.ok) {
-    throw new Error(`Falha ao carregar cursos. Status ${res.status}. Body: ${text}`)
-  }
+    if (!res.ok) {
+      throw new Error(`Falha ao carregar cursos. Status ${res.status}. Body: ${text}`)
+    }
 
-  const data = text ? JSON.parse(text) : { items: [] }
-  const items = Array.isArray(data?.items) ? data.items : []
+    const data = text ? JSON.parse(text) : { items: [] }
+    const items = Array.isArray(data?.items) ? data.items : []
 
-  rowData.value = items.map(course => ({
-    id: course.id_curso,
-    courseId: course.id_curso,
-    name: course.nome_curso,
-    unity: course.nome_unidade,
-    campus: course.nome_campus,
-    type: course.modalidade,
-    period: course.nome_periodo,
-    evasion: null,
-    children: null,
-    async loadDetail() {
-      if (Array.isArray(this.children)) {
+    const itemsWithEvasion = await attachCourseEvasion(items)
+
+    rowData.value = itemsWithEvasion.map(course => ({
+      id: course.id_curso,
+      courseId: course.id_curso,
+      name: course.nome_curso,
+      unity: course.nome_unidade,
+      campus: course.nome_campus,
+      type: course.modalidade,
+      period: course.nome_periodo,
+      evasion: course.evasion,
+      children: null,
+      async loadDetail() {
+        if (Array.isArray(this.children)) {
+          return this.children
+        }
+
+        const students = await fetchCourseStudents(this.courseId)
+        this.children = students.map(student => ({
+          ...student,
+          impact: student.impact ?? {}
+        }))
+
         return this.children
       }
-
-      const students = await fetchCourseStudents(this.courseId)
-      this.children = students.map(student => ({
-        ...student,
-        impact: student.impact ?? {}
-      }))
-
-      return this.children
-    }
-  }))
-
+    }))
+  } finally {
+    loading.value = false
+  }
 }
 
 onMounted(() => {
-  loadCourses().catch((e) => {
+  loadCourses().catch(() => {
     rowData.value = []
   })
 })
 </script>
 
 <template>
-  <BaseTable entity="courses" :rowData="rowData" />
+  <BaseTable entity="courses" :rowData="rowData" :loading="loading" />
 </template>

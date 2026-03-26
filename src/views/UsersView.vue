@@ -9,6 +9,7 @@ const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const rowData = ref([])
 const showModal = ref(false)
 const selectedUser = ref(null)
+const loading = ref(false)
 
 const pendingUsers = computed(() => {
   return rowData.value.filter(user => {
@@ -38,33 +39,38 @@ async function handleUsersRefresh() {
 }
 
 async function loadUsers() {
-  const url = `${apiBase}/admin/users`
-  const res = await fetch(url, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { Accept: 'application/json' }
-  })
-
-  const text = await res.text()
-
-  if (!res.ok) {
-    throw new Error(`Falha ao carregar usuários. Status ${res.status}. Body: ${text}`)
+  loading.value = true
+  try{
+    const url = `${apiBase}/admin/users`
+    const res = await fetch(url, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' }
+    })
+  
+    const text = await res.text()
+  
+    if (!res.ok) {
+      throw new Error(`Falha ao carregar usuários. Status ${res.status}. Body: ${text}`)
+    }
+  
+    const data = text ? JSON.parse(text) : { items: [] }
+    const items = Array.isArray(data?.items) ? data.items : []
+  
+    rowData.value = items.map(u => ({
+      ...u,
+      id: u.id,
+      nome: u.nome,
+      categoria: u.categoria,
+      campus: u.campus,
+      data_cadastro: maskDateTime(u.data_cadastro),
+      data_atualizacao: maskDateTime(u.data_atualizacao),
+      documents: u.documentos ?? [],
+      status: u.status
+    }))
+  } finally {
+    loading.value = false
   }
-
-  const data = text ? JSON.parse(text) : { items: [] }
-  const items = Array.isArray(data?.items) ? data.items : []
-
-  rowData.value = items.map(u => ({
-    ...u,
-    id: u.id,
-    nome: u.nome,
-    categoria: u.categoria,
-    campus: u.campus,
-    data_cadastro: maskDateTime(u.data_cadastro),
-    data_atualizacao: maskDateTime(u.data_atualizacao),
-    documents: u.documentos ?? [],
-    status: u.status
-  }))
 }
 
 onMounted(() => {
@@ -83,7 +89,7 @@ onMounted(() => {
       </p>
     </div>
 
-    <BaseTable entity="users" :rowData="rowData" @open-documents="openDocuments" />
+    <BaseTable entity="users" :rowData="rowData" @open-documents="openDocuments" :loading="loading"/>
   </section>
   <UserDocumentsModal v-if="showModal && selectedUser" :user="selectedUser" @close="closeModal"
     @refresh="handleUsersRefresh" />

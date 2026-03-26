@@ -2,6 +2,26 @@ import StudentButtonCellRenderer from "@/components/StudentButtonCellRenderer.vu
 import { riskColor } from "@/utils/colorScaleDroptout"
 import { impactColumn } from "@/utils/impactColumn"
 
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+export async function getCourseEvasion(cursoId, highRiskThreshold = 0.7) {
+  const url = new URL(`${apiBase}/cursos/${cursoId}/risco-evasao`)
+  url.searchParams.set('high_risk_threshold', String(highRiskThreshold))
+
+  const res = await fetch(url.toString(), {
+    method: 'GET',
+    credentials: 'include'
+  })
+
+  const body = await res.json().catch(() => ({}))
+
+  if (!res.ok) {
+    throw new Error(body?.detail || 'Erro ao calcular evasão do curso.')
+  }
+
+  return body?.risco_percentual ?? null
+}
+
 function buildDetailRows(children = []) {
   const rows = []
 

@@ -8,6 +8,7 @@ const rowData = ref([])
 const page = ref(1)
 const pageSize = ref(100)
 const total = ref(0)
+const loading = ref(false)
 
 function buildRows(items = []) {
   const rows = []
@@ -30,25 +31,30 @@ function buildRows(items = []) {
 }
 
 async function loadStudents() {
-  const offset = (page.value - 1) * pageSize.value
-
-  const res = await fetch(`${apiBase}/students?limit=${pageSize.value}&offset=${offset}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { Accept: 'application/json' }
-  })
-
-  const text = await res.text()
-
-  if (!res.ok) {
-    throw new Error(`Falha ao carregar discentes. Status ${res.status}. Body: ${text}`)
+  loading.value = true
+  try{
+    const offset = (page.value - 1) * pageSize.value
+  
+    const res = await fetch(`${apiBase}/students?limit=${pageSize.value}&offset=${offset}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' }
+    })
+  
+    const text = await res.text()
+  
+    if (!res.ok) {
+      throw new Error(`Falha ao carregar discentes. Status ${res.status}. Body: ${text}`)
+    }
+  
+    const data = text ? JSON.parse(text) : { items: [], total: 0 }
+    const items = Array.isArray(data?.items) ? data.items : []
+  
+    total.value = data?.total ?? 0
+    rowData.value = buildRows(items)
+  } finally {
+    loading.value = false
   }
-
-  const data = text ? JSON.parse(text) : { items: [], total: 0 }
-  const items = Array.isArray(data?.items) ? data.items : []
-
-  total.value = data?.total ?? 0
-  rowData.value = buildRows(items)
 }
 
 onMounted(() => {
@@ -65,5 +71,5 @@ watch([page, pageSize], () => {
 </script>
 
 <template>
-    <BaseTable entity="students" :rowData="rowData" />
+    <BaseTable entity="students" :rowData="rowData" :loading="loading"/>
 </template>

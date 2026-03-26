@@ -2,6 +2,26 @@ import { riskColor } from "@/utils/colorScaleDroptout"
 
 const treeLabelById = new Map()
 
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+export async function getUnitEvasion(unidadeId, highRiskThreshold = 0.7) {
+  const url = new URL(`${apiBase}/unidades/${unidadeId}/risco-evasao`)
+  url.searchParams.set('high_risk_threshold', String(highRiskThreshold))
+
+  const res = await fetch(url.toString(), {
+    method: 'GET',
+    credentials: 'include'
+  })
+
+  const body = await res.json().catch(() => ({}))
+
+  if (!res.ok) {
+    throw new Error(body?.detail || 'Erro ao calcular evasão da unidade.')
+  }
+
+  return body?.risco_percentual ?? null
+}
+
 export default {
   columns: [
     { field: 'campus', headerName: 'tables.general.campus' },
