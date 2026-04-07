@@ -24,6 +24,11 @@ function normalizeErrorMessage(res, data) {
   return `Erro ${res.status}`
 }
 
+function showErrorAlert(error, fallback = 'Ocorreu um erro inesperado.') {
+  const message = error?.message || fallback
+  alert(message)
+}
+
 async function requestJson(path, { method = 'GET', params, body, headers, credentials = 'include' } = {}) {
   const url = `${API_BASE}${path}${params ? toQueryString(params) : ''}`
 
@@ -118,7 +123,6 @@ export function useSignup() {
     }
   })
 
-
   async function sendCode() {
     verification.error = ''
     verification.sending = true
@@ -131,6 +135,7 @@ export function useSignup() {
       return data
     } catch (e) {
       verification.error = e?.message ?? 'Falha ao enviar código'
+      showErrorAlert(e, 'Falha ao enviar código')
       throw e
     } finally {
       verification.sending = false
@@ -149,6 +154,7 @@ export function useSignup() {
       return data
     } catch (e) {
       verification.error = e?.message ?? 'Falha ao verificar código'
+      showErrorAlert(e, 'Falha ao verificar código')
       throw e
     } finally {
       verification.verifying = false
@@ -160,6 +166,9 @@ export function useSignup() {
     try {
       const data = await requestJson('/public/campus')
       sources.campus = (data?.items ?? []).map((c) => ({ value: c.id_campus, label: c.nome_campus }))
+    } catch (e) {
+      showErrorAlert(e, 'Falha ao carregar campus')
+      throw e
     } finally {
       loading.campus = false
     }
@@ -170,6 +179,9 @@ export function useSignup() {
     try {
       const data = await requestJson('/public/unidades', { params: { campus_id: campusId } })
       sources.unidades = (data?.items ?? []).map((u) => ({ value: u.id_unidade, label: u.nome_unidade }))
+    } catch (e) {
+      showErrorAlert(e, 'Falha ao carregar unidades')
+      throw e
     } finally {
       loading.unidades = false
     }
@@ -180,6 +192,9 @@ export function useSignup() {
     try {
       const data = await requestJson(`/public/unidades/${unidadeId}/cursos`)
       sources.cursos = (data?.items ?? []).map((c) => ({ value: c.id_curso, label: c.nome_curso }))
+    } catch (e) {
+      showErrorAlert(e, 'Falha ao carregar cursos')
+      throw e
     } finally {
       loading.cursos = false
     }
@@ -190,6 +205,9 @@ export function useSignup() {
     try {
       const data = await requestJson(`/public/cursos/${cursoId}/disciplinas`)
       sources.disciplinas = (data?.items ?? []).map((d) => ({ value: d.id_disciplina, label: d.nome_disciplina }))
+    } catch (e) {
+      showErrorAlert(e, 'Falha ao carregar disciplinas')
+      throw e
     } finally {
       loading.disciplinas = false
     }
@@ -200,6 +218,9 @@ export function useSignup() {
     try {
       const data = await requestJson('/public/departamentos', { params: { unidade_id: unidadeId, campus_id: campusId } })
       sources.departamentos = (data?.items ?? []).map((d) => ({ value: d.id_departamento, label: d.nome_departamento }))
+    } catch (e) {
+      showErrorAlert(e, 'Falha ao carregar departamentos')
+      throw e
     } finally {
       loading.departamentos = false
     }
@@ -209,13 +230,11 @@ export function useSignup() {
     return {
       email: extra.email ?? signup.email,
       categoria: extra.categoria ?? signup.categoria,
-
       campus_id: extra.campus_id ?? signup.form?.campus,
       unidade_id: extra.unidade_id ?? signup.form?.unidade,
       departamento_id: extra.departamento_id ?? signup.form?.departamento,
       curso_id: extra.curso_id ?? signup.form?.curso,
       disciplinas: extra.disciplinas ?? signup.form?.disciplinas,
-
       nome: extra.nome ?? signup.form?.nome,
       cpf: extra.cpf ?? signup.form?.cpf,
       telefone: extra.telefone ?? signup.form?.telefone,
@@ -270,6 +289,9 @@ export function useSignup() {
       const data = await safeJson(res)
       if (!res.ok) throw new Error(normalizeErrorMessage(res, data))
       return data
+    } catch (e) {
+      showErrorAlert(e, 'Falha ao criar usuário')
+      throw e
     } finally {
       loading.createUser = false
     }

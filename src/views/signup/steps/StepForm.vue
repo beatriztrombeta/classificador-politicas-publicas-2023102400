@@ -61,12 +61,12 @@ function pickFirstFileFromForm(formObj) {
 }
 
 async function handleSubmit() {
-  const cpf = (signup.form?.cpf ?? '').toString().trim()
-  const telefone = (signup.form?.telefone ?? '').toString().trim()
-
-  if (cpf && !cpfRegex.test(cpf)) throw new Error('CPF inválido.')
-  if (telefone && !telefoneRegex.test(telefone)) throw new Error('Telefone inválido. Use (xx) xxxxx-xxxx.')
   try {
+    const cpf = (signup.form?.cpf ?? '').toString().trim()
+    const telefone = (signup.form?.telefone ?? '').toString().trim()
+
+    if (cpf && !cpfRegex.test(cpf)) throw new Error('CPF inválido.')
+    if (telefone && !telefoneRegex.test(telefone)) throw new Error('Telefone inválido. Use (xx) xxxxx-xxxx.')
     if (!verification?.verified) throw new Error('Você precisa validar o código do e-mail antes de finalizar.')
 
     const file = pickFirstFileFromForm(signup.form)
