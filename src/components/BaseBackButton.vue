@@ -20,6 +20,8 @@ const { back } = inject('signup');
   padding-left: 1rem;
   cursor: pointer;
   width: fit-content;
+  position: relative;
+  top: 2rem;
 }
 
 .back-button {
