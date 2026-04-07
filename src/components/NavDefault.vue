@@ -68,8 +68,10 @@ const isActive = (name) => route.name === name
 <template>
   <header>
     <nav>
-      <img :src="UnespLogo" alt="UNESP logo" />
-
+      <div class="images-wrapper">
+        <img :src="UnespLogo" alt="UNESP logo" class="unesp-logo"/>
+        <img src="../assets/images/logo-verde.png" alt="" class="fica-na-facul">
+      </div>
       <div id="tabela-nav">
         <router-link v-for="item in filteredNavigationItems" :key="item.name" :to="item.path" custom
           v-slot="{ navigate }">
@@ -139,8 +141,20 @@ header>div:last-child {
   position: relative;
 }
 
-img {
+.images-wrapper{
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  align-items: center;
+}
+
+.unesp-logo {
   width: 10rem;
+  height: fit-content;
+}
+
+.fica-na-facul{
+  width: 7rem;
 }
 
 #profile {
