@@ -6,7 +6,7 @@ import BaseTable from '@/components/BaseTable.vue'
 const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const route = useRoute()
 
-const loading = ref(true)
+const loading = ref(false)
 const error = ref('')
 
 const student = ref(null)
@@ -79,22 +79,27 @@ function buildStudentRows(data) {
 }
 
 async function loadStudent() {
-  const alunoId = route.params.id
-
-  const res = await fetch(`${apiBase}/students/${alunoId}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { Accept: 'application/json' }
-  })
-
-  const text = await res.text()
-  if (!res.ok) {
-    throw new Error(`Falha ao carregar aluno. Status ${res.status}. Body: ${text}`)
+  loading.value = true
+  try{
+    const alunoId = route.params.id
+  
+    const res = await fetch(`${apiBase}/students/${alunoId}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' }
+    })
+  
+    const text = await res.text()
+    if (!res.ok) {
+      throw new Error(`Falha ao carregar aluno. Status ${res.status}. Body: ${text}`)
+    }
+  
+    const data = text ? JSON.parse(text) : { data: null }
+    student.value = data?.data ?? null
+    studentRow.value = buildStudentRows(student.value)
+  } finally {
+    loading.value = false
   }
-
-  const data = text ? JSON.parse(text) : { data: null }
-  student.value = data?.data ?? null
-  studentRow.value = buildStudentRows(student.value)
 }
 
 async function loadXaiSummary() {
@@ -116,21 +121,26 @@ async function loadXaiSummary() {
 }
 
 async function loadSubjects() {
-  const alunoId = route.params.id
-
-  const res = await fetch(`${apiBase}/students/${alunoId}/subjects`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { Accept: 'application/json' }
-  })
-
-  const text = await res.text()
-  if (!res.ok) {
-    throw new Error(`Falha ao carregar disciplinas. Status ${res.status}. Body: ${text}`)
+  loading.value = true
+  try{
+    const alunoId = route.params.id
+  
+    const res = await fetch(`${apiBase}/students/${alunoId}/subjects`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' }
+    })
+  
+    const text = await res.text()
+    if (!res.ok) {
+      throw new Error(`Falha ao carregar disciplinas. Status ${res.status}. Body: ${text}`)
+    }
+  
+    const data = text ? JSON.parse(text) : { items: [] }
+    subjectsRow.value = data?.items ?? []
+  } finally {
+    loading.value = false
   }
-
-  const data = text ? JSON.parse(text) : { items: [] }
-  subjectsRow.value = data?.items ?? []
 }
 
 onMounted(async () => {
@@ -154,12 +164,17 @@ onMounted(async () => {
 <template>
   <section>
     <div class="student-info-wrapper">
-      <div v-if="student">
-        <p><strong>Aluno:</strong> {{ student.id_aluno_graduacao }}</p>
-        <p><strong>Curso:</strong> {{ student.nome_curso || '—' }}</p>
-        <p><strong>Unidade:</strong> {{ student.nome_unidade || '—' }}</p>
-        <p><strong>Campus:</strong> {{ student.nome_campus || '—' }}</p>
-        <p><strong>Período:</strong> {{ student.nome_periodo || '—' }}</p>
+      <div class="student-row-wrapper">
+        <div v-if="student">
+          <p><strong>Aluno:</strong> {{ student.id_aluno_graduacao }}</p>
+          <p><strong>Curso:</strong> {{ student.nome_curso || '—' }}</p>
+          <p><strong>Unidade:</strong> {{ student.nome_unidade || '—' }}</p>
+          <p><strong>Campus:</strong> {{ student.nome_campus || '—' }}</p>
+          <p><strong>Período:</strong> {{ student.nome_periodo || '—' }}</p>
+        </div>
+        <div>
+          <img src="../assets/images/bot_sentado.png" alt="" class="bot">
+        </div>
       </div>
       <div class="warning-wrapper">
         <p>📋</p>
@@ -174,11 +189,11 @@ onMounted(async () => {
     <div>
       <h3>Geral</h3>
       <div class="table-wrapper">
-        <BaseTable entity="studentDetailCourse" :rowData="studentRow" />
+        <BaseTable entity="studentDetailCourse" :rowData="studentRow" :loading="loading"/>
       </div>
       <h3>Disciplinas</h3>
       <div class="table-wrapper">
-        <BaseTable entity="studentDetailSubject" :rowData="subjectsRow" />
+        <BaseTable entity="studentDetailSubject" :rowData="subjectsRow" :loading="loading"/>
       </div>
     </div>
   </section>
@@ -213,9 +228,21 @@ section {
   gap: 1rem;
 }
 
+.student-row-wrapper{
+  display: flex;
+  justify-content: space-between;
+}
+
 .table-wrapper {
   padding-top: 1rem;
   width: 100%;
   overflow-x: auto;
+}
+
+.bot{
+  width: 9rem;
+  position: relative;
+  top: -1.5rem;
+  left: -3rem;
 }
 </style>
